@@ -275,6 +275,7 @@ main() {
   doit benchbase_clone --repo_url="https://github.com/apavlo/benchbase.git" --branch_name="main"
   cp ./build/benchbase/config/postgres/15799_starter_config.xml ./config/behavior/benchbase/epinions_config.xml
   cp ./build/benchbase/config/postgres/15799_indexjungle_config.xml ./config/behavior/benchbase/indexjungle_config.xml
+  cp ./build/benchbase/config/postgres/sample_tpcc_config.xml ./config/behavior/benchbase/tpcc_config.xml
 
   benchmark_dump_folder="./artifacts/project/dumps"
   # Create the folder for all the benchmark dumps.
@@ -285,7 +286,7 @@ main() {
 
   # TODO(Matt): Verify that these paths are correct.
   # Make a copy of the postgresql.conf file.
-  cp /etc/postgresql/14/main/postgresql.conf /etc/postgresql/14/main/postgresql.conf.old
+  sudo bash -c "cp /etc/postgresql/14/main/postgresql.conf /etc/postgresql/14/main/postgresql.conf.old"
 
   for benchmark_spec in "${BENCHMARKS[@]}"; do
     while IFS=',' read -r benchmark workload_csv; do
@@ -294,9 +295,9 @@ main() {
 
       # TODO(Matt): Verify that these paths are correct.
       # Remove the auto.conf that might have existed from prior student runs.
-      rm -rf /var/lib/postgresql/14/main/postgresql.auto.conf
+      sudo bash -c "rm -rf /var/lib/postgresql/14/main/postgresql.auto.conf"
       # Restore the original postgresql.conf file.
-      cp /etc/postgresql/14/main/postgresql.conf.old /etc/postgresql/14/main/postgresql.conf
+      sudo bash -c "cp /etc/postgresql/14/main/postgresql.conf.old /etc/postgresql/14/main/postgresql.conf"
 
       # Create the project database.
       _setup_database
@@ -326,9 +327,9 @@ main() {
       for student in "${STUDENTS[@]}"; do
         # TODO(Matt): Verify that these paths are correct.
         # Remove the auto.conf that might have been created by a prior student.
-        rm -rf /var/lib/postgresql/14/main/postgresql.auto.conf
+        sudo bash -c "rm -rf /var/lib/postgresql/14/main/postgresql.auto.conf"
         # Restore the original postgresql.conf file.
-        cp /etc/postgresql/14/main/postgresql.conf.old /etc/postgresql/14/main/postgresql.conf
+        sudo bash -c "cp /etc/postgresql/14/main/postgresql.conf.old /etc/postgresql/14/main/postgresql.conf"
 
         while IFS=',' read -r git_url andrew_id; do
           student_submission_path="${student_submission_folder}/${andrew_id}"

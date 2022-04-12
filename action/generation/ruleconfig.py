@@ -5,16 +5,19 @@ import yaml
 from action import ActionGenerator
 from connector import Connector
 import index_actions, knob_actions
+import knob_actions_categorical
 from workload import Workload
 
 
 def parse_config(file: str, conn: Connector) -> List[ActionGenerator]:
+    # To deduplicate exact same generators with same attrs, can use generators = set()
     generators = []
     with open(file, 'r') as f:
         config = yaml.safe_load(f)
         for generator in config['Generators']:
             gen_type = list(generator.keys())[0]
             gen_args = generator[gen_type]
+            print(gen_args)
             if gen_type == "DropIndexGenerator":
                 # TODO: pass in specified input indexes to drop generator
                 # inds = gen_args['Indexes']
@@ -40,9 +43,13 @@ def parse_config(file: str, conn: Connector) -> List[ActionGenerator]:
             elif gen_type == "CategoricalKnobGenerator":
                 name = gen_args['Name']
                 values = gen_args['Values']
-                generators.append(knob_actions.CategoricalKnobGenerator(
+                generators.append(knob_actions_categorical.CategoricalKnobGenerator(
                     conn, name, values))
+    return generators
 
 
-def __main__():
-    parse_config('temp.yaml')
+if __name__ == "__main__":
+    generators = parse_config('temp.yaml', Connector())
+    for gen in generators:
+        for action in gen:
+            print(str(action))

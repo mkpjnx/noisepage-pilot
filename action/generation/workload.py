@@ -2,6 +2,8 @@ from collections import defaultdict
 import numpy as np
 import pandas as pd
 import pglast
+# weird issue if comment this import
+from pglast import visitors
 import re
 from typing import List
 

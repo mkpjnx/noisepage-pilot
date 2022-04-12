@@ -1,0 +1,25 @@
+Generators:
+  - DropIndexGenerator:
+      Indexes:
+        - Name1
+        - Name2
+  - ExhaustiveIndexGenerator:
+      MaxWidth: n
+  - WorkloadIndexGenerator:
+      WorkloadFile: str
+      MaxWidth: n
+  - TypedIndexGenerator:
+      Types:
+        - type1
+        - type2
+  - NumericalKnobGenerator:
+      Name: str
+      Type: PCT
+      Min: .1
+      Max: 5
+      Interval: .1
+  - CategoricalKnobGenerator:
+      Name: categoricalKnob
+      Values:
+        - val1
+        - val2

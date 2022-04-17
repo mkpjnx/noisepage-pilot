@@ -104,6 +104,11 @@ class ExhaustiveIndexGenerator(ActionGenerator):
                 for action in self._iter_table_widths(table, width):
                     yield action
 
+    def items(self):
+        for table in self.tables:
+            for width in range(1, self.max_width + 1):
+                for action in self._iter_table_widths(table, width):
+                    yield action
 
 class WorkloadIndexGenerator(ActionGenerator):
     '''
@@ -136,6 +141,11 @@ class WorkloadIndexGenerator(ActionGenerator):
                 for action in self._iter_table_widths(table, width):
                     yield action
 
+    def items(self):
+        for table in self.tables:
+            for width in range(1, self.max_width + 1):
+                for action in self._iter_table_widths(table, width):
+                    yield action
 
 class TypedIndexGenerator(ActionGenerator):
     '''
@@ -148,7 +158,7 @@ class TypedIndexGenerator(ActionGenerator):
         self.upstream = upstream
 
     def __iter__(self) -> str:
-        for orig_action in self.upstream:
+        for orig_action in self.upstream.items():
             for using in ["HASH", "BRIN"]:
                 new_action = copy.deepcopy(orig_action)
                 new_action.using = using

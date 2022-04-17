@@ -21,7 +21,7 @@ class GenerateActions(cli.Application):
         generators = ruleconfig.parse_config(self.config_file, self.conn)
 
         with open(self.output_sql, "w") as f:
-            for _, gen in generators:
+            for _, gen in generators.items():
                 for action in gen:
                     print(str(action), file=f)
 

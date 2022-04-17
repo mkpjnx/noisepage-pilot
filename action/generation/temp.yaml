@@ -6,7 +6,7 @@ Generators:
         - Name2
   - ExhaustiveIndexGenerator:
       Name: generator2
-      MaxWidth: 10
+      MaxWidth: 2
   - WorkloadIndexGenerator:
       Name: generator3
       WorkloadFile: logs/epinions.csv
@@ -16,7 +16,7 @@ Generators:
       Types:
         - HASH
         - BRIN
-        # - BTREE
+        # - BTREE is not needed: currently we've collect actions from the upstream already
       Upstream: generator3
   - NumericalKnobGenerator:
       Name: generator5

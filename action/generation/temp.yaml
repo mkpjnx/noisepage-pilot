@@ -1,0 +1,35 @@
+Generators:
+  - DropIndexGenerator:
+      Indexes:
+        - Name1
+        - Name2
+  - ExhaustiveIndexGenerator:
+      MaxWidth: 10
+  - WorkloadIndexGenerator:
+      WorkloadFile: logs/epinions.csv
+      MaxWidth: 5
+  - TypedIndexGenerator:
+      Types:
+        - type1
+        - type2
+  - NumericalKnobGenerator:
+      Name: work_mem
+      Type: PCT
+      Min: .1
+      Max: 5
+      Interval: .1
+  - CategoricalKnobGenerator:
+      Name: enable_seqscan
+      Values:
+        - "on"
+        - "off"
+  - CategoricalKnobGenerator:
+      Name: wal_level
+      Values:
+        - 'minimal'
+        - 'replica'
+  - CategoricalKnobGenerator:
+      Name: wal_level
+      Values:
+        - 'minimal'
+        - 'replica'

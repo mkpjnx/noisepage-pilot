@@ -23,13 +23,9 @@ class CategoricalKnobGenerator(ActionGenerator):
         self.alterSystem = alterSystem
 
         # validity check
-        def get_type_with_values(name):
-            # TODO(Mike): Add error checking (throw err if knob does not exists)
-            query = f"SELECT vartype, enumvals FROM pg_settings WHERE name = '{name}';"
-            return connector.exec_commit(query)[0]
 
         try:
-            vartype, legal_enumvals = get_type_with_values(name)  # return 'enum', ['minimal', 'replica', 'logical']
+            vartype, legal_enumvals = connector.get_categorical_type_with_values(name)  # return 'enum', ['minimal', 'replica', 'logical']
 
             if vartype not in ['bool', 'enum']:
                 print("vartype: {} not in ['bool', 'enum']".format(vartype))

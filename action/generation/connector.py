@@ -176,4 +176,9 @@ class Connector():
         query = f"SELECT setting, unit FROM pg_settings WHERE name = '{name}';"
         return self.exec_commit(query)[0]
     # We should not have knob actions here.
+    def get_categorical_type_with_values(self, name):
+        # TODO(Mike): Add error checking (throw err if knob does not exists)
+        query = f"SELECT vartype, enumvals FROM pg_settings WHERE name = '{name}';"
+        return self.exec_commit(query)[0]
+
     # END knob interactions

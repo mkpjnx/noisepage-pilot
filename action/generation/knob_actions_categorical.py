@@ -1,6 +1,7 @@
 from knob_actions import KnobAction
 from action import ActionGenerator
 from connector import Connector
+from typing import List
 
 
 class CategoricalKnobGenerator(ActionGenerator):
@@ -12,7 +13,7 @@ class CategoricalKnobGenerator(ActionGenerator):
             self,
             connector: Connector,
             name: str,
-            values: list[str],
+            values: List[str],
             alterSystem=False
     ):
         ActionGenerator.__init__(self)

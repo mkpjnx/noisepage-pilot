@@ -66,7 +66,7 @@ class NumericalKnobGenerator(ActionGenerator):
         while change <= self.maxVal:
             newVal = str(val)
             if self.type == KnobType.PCT:
-                newVal = str(float(val) * change)
+                newVal = str(round(float(val) * change,2))
             elif self.type == KnobType.DELTA:
                 newVal = str(float(val) + change)
             elif self.type == KnobType.ABSOLUTE:

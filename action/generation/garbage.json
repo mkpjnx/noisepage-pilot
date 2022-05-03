@@ -1,0 +1,21 @@
+{
+    "info": {
+        "title":    "GaRBAGE -- GlobAl Rule-Based Action Generation & Enumeration",
+        "github":   "https://github.com/mkpjnx/noisepage-pilot/tree/main/action/generation",
+        "description":  "GaRBAGE is an action enumeration system that will guide the search and planning of actions in NoisePage. The space of all actions a self-driving DBMS can take to improve performance, e.g. building indexes, tuning knobs, adding MVs, is far too vast to search exhaustively and can change as the schema evolve. Based on configurable \"rules\", GaRBAGE can restrict or expand the search space as needed -- either to help generate training data for system models, or as input into the search and planning modules.",
+        "students": [
+            {
+                "name": "Ying (Jenny) Jiang",
+                "url": "http://www.cs.cmu.edu/~yingj2/"
+            },
+            {
+                "name": "Deepayan Patra",
+                "url": "https://deepayan.dev/"
+            },
+            {
+                "name": "Mike Xu",
+                "url": "https://www.linkedin.com/in/mikepjxu/"
+            }
+        ]
+    }
+}

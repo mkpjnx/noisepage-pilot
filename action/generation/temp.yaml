@@ -4,13 +4,13 @@ Generators:
       Indexes:
         - Name1
         - Name2
-  - ExhaustiveIndexGenerator:
-      Name: generator2
-      MaxWidth: 2
+  # - ExhaustiveIndexGenerator:
+  #     Name: generator2
+  #     MaxWidth: 2
   - WorkloadIndexGenerator:
       Name: generator3
-      WorkloadFile: logs/epinions.csv
-      MaxWidth: 5
+      WorkloadFile: workload.csv
+      MaxWidth: 2
   - TypedIndexGenerator:
       Name: generator4
       Types:
@@ -21,22 +21,23 @@ Generators:
   - NumericalKnobGenerator:
       Name: generator5
       Knob: work_mem
-      Type: PCT
-      Min: .1
-      Max: 5
-      Interval: .1
-  - CategoricalKnobGenerator:
+      Type: POW2
+      Min: 2
+      Max: 10
+      Interval: 1
+  - NumericalKnobGenerator:
       Name: generator6
+      Knob: shared_buffers
+      Type: PCT
+      Min: 0.10
+      Max: 2
+      Interval: 0.1
+  - CategoricalKnobGenerator:
+      Name: generator7
       Knob: enable_seqscan
       Values:
         - "on"
         - "off"
-  - CategoricalKnobGenerator:
-      Name: generator7
-      Knob: wal_level
-      Values:
-        - "minimal"
-        - "replica"
   - CategoricalKnobGenerator:
       Name: generator8
       Knob: wal_level

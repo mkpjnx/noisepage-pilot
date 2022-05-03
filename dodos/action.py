@@ -40,8 +40,12 @@ def task_action_generation():
     #   - Write to system table (v1)
     # - Workload (from where?)
 
-    def generate_actions(args):
-        cmd = f"python3 ./action/generation/action_selection.py --output-sql {ARTIFACT_ACTIONS} {args}"
+    def generate_actions(configfile):
+        cmd = (
+            f'python3 ./action/generation/action_selection.py '
+            f'--output-sql {ARTIFACT_ACTIONS} '
+            f'--config-file {configfile} ')
+        print(cmd)
         return cmd
 
     return {
@@ -56,9 +60,9 @@ def task_action_generation():
         "verbosity": VERBOSITY_DEFAULT,
         "params": [
             {
-                "name": "args",
-                "long": "args",
-                "default": "--workload-csv workload.csv",
+                "name": "configfile",
+                "long": "configfile",
+                "default": "action/generation/temp.yaml",
             },
         ],
     }

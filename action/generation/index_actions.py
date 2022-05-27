@@ -70,8 +70,8 @@ class DropIndexGenerator(ActionGenerator):
         ActionGenerator.__init__(self)
         self.indexes = conn.get_index_info()
     def __iter__(self):
-        for indname, _, _, _, _ in self.indexes:
-            yield DropIndexAction(indname)
+        for ind in self.indexes:
+            yield DropIndexAction(ind[0])
 
 
 class ExhaustiveIndexGenerator(ActionGenerator):

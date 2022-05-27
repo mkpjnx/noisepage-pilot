@@ -13,6 +13,7 @@ pandas
 pglast
 plumbum
 psycopg
+psycopg2
 psutil
 pyarrow # Forecast. Parquet support.
 pydotplus
@@ -22,6 +23,7 @@ pyyaml
 scikit-learn>=1.0.0 # Behavior models.
 setproctitle
 setuptools
+sqlalchemy
 torch # Forecast. LSTM.
 toml
 tqdm

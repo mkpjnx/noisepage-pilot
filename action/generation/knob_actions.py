@@ -11,8 +11,9 @@ from pglast.enums.parsenodes import *
 
 from enum import Enum
 
+
 class KnobAction(Action):
-    def __init__(self, name, setting = None, alterSystem = False):
+    def __init__(self, name, setting=None, alterSystem=False):
         Action.__init__(self)
         self.name = name
         self.setting = setting
@@ -54,50 +55,54 @@ class NumericalKnobGenerator(ActionGenerator):
     def __init__(
         self,
         connector: Connector,
-        name: str,
-        type: KnobType = KnobType.PCT,
-        minVal: float = 0.1,
-        maxVal: float = 5,
-        interval: float = 0.1
+        knob_name: str,
+        mode: KnobType = KnobType.PCT,
+        min_val: float = 0.1,
+        max_val: float = 5,
+        interval: float = 0.1,
+        **kwargs
     ):
         ActionGenerator.__init__(self)
         self.connector = connector
-        self.name = name
-        self.type = type
-        self.minVal = minVal
-        self.maxVal = maxVal
+        self.mode = mode
+        self.min_val = min_val
+        self.max_val = max_val
         self.interval = interval
 
-        knob = connector.get_config(name)
+        knob = connector.get_config(knob_name)
 
         if knob['vartype'] not in ['integer', 'real']:
-            raise TypeError(f"{name} ({knob['vartype']}) is not a numerical knob (i.e. real or integer)")
-        
-        self.valType = float if knob['vartype'] == 'real' else int
-        self.curVal = self.valType(knob['setting'])
+            raise TypeError(
+                f"{knob} ({knob['vartype']}) is not a numerical knob (i.e. real or integer)")
 
-        # Check out of range min/max vals
-        if self.maxVal > self.valType(knob['max_val']):
-            raise ValueError(
-                f"max_val exceeds legal limit ({knob['max_val']}) for {name}")
-        if self.minVal < self.valType(knob['min_val']):
-            raise ValueError(
-                f"max_val exceeds legal limit ({knob['min_val']}) for {name}")
+        self.valType = float if knob['vartype'] == 'real' else int
+        self.cur_val = self.valType(knob['setting'])
+        self.knob = knob
 
     def __iter__(self):
-        val = self.curVal
-        change = self.minVal
-        while change <= self.maxVal:
-            newVal = val
-            if self.type == KnobType.PCT:
-                newVal = val * change
-            elif self.type == KnobType.DELTA:
-                newVal = val + change
-            elif self.type == KnobType.ABSOLUTE:
-                newVal = change
-            elif self.type == KnobType.POW2:
-                newVal = 2**change
+        val = self.cur_val
+        change = self.min_val
+        while change <= self.max_val:
+            new_val = val
+            if self.mode == KnobType.PCT:
+                new_val = val * change
+            elif self.mode == KnobType.DELTA:
+                new_val = val + change
+            elif self.mode == KnobType.ABSOLUTE:
+                new_val = change
+            elif self.mode == KnobType.POW2:
+                new_val = 2**change
             else:
-                newVal = None
-            yield KnobAction(self.name, newVal)
+                new_val = None
+
+            # Check legality:
+            if new_val > self.valType(self.knob['max_val']):
+                raise ValueError(
+                    f"max_val exceeds legal limit ({self.knob['max_val']}) for {self.knob['name']}")
+
+            if new_val < self.valType(self.knob['min_val']):
+                raise ValueError(
+                    f"min_val exceeds legal limit ({self.knob['min_val']}) for {self.knob['name']}")
+
+            yield KnobAction(self.knob['name'], new_val)
             change += self.interval

@@ -1,46 +1,51 @@
 Generators:
-  - DropIndexGenerator:
-      Name: generator1
-      Indexes:
-        - Name1
-        - Name2
-  # - ExhaustiveIndexGenerator:
-  #     Name: generator2
-  #     MaxWidth: 2
-  - WorkloadIndexGenerator:
-      Name: generator3
-      WorkloadFile: workload.csv
-      MaxWidth: 2
-  - TypedIndexGenerator:
-      Name: generator4
-      Types:
+  - generator: DropIndexGenerator
+    name: generator1
+    args:
+  - generator: ExhaustiveIndexGenerator
+    name: generator2
+    args:
+      max_width: 2
+  # - generator: WorkloadIndexGenerator
+  #   name: generator3
+  #   args:
+  #     workload: workload.csv
+  #     max_width: 2
+  - generator: TypedIndexGenerator
+    name: generator4
+    args:
+      types:
         - HASH
         - BRIN
         # - BTREE is not needed: currently we've collect actions from the upstream already
-      Upstream: generator3
-  - NumericalKnobGenerator:
-      Name: generator5
-      Knob: work_mem
-      Type: POW2
-      Min: 2
-      Max: 10
-      Interval: 1
-  - NumericalKnobGenerator:
-      Name: generator6
-      Knob: shared_buffers
-      Type: PCT
-      Min: 0.10
-      Max: 2
-      Interval: 0.1
-  - CategoricalKnobGenerator:
-      Name: generator7
-      Knob: enable_seqscan
-      Values:
-        - "on"
-        - "off"
-  - CategoricalKnobGenerator:
-      Name: generator8
-      Knob: wal_level
-      Values:
+      upstream: generator2
+  - generator: NumericalKnobGenerator
+    name: generator5
+    args:
+      knob_name: work_mem
+      mode: POW2
+      min_val: 10
+      max_val: 20
+      interval: 1
+  - generator: NumericalKnobGenerator
+    name: generator6
+    args:
+      knob_name: shared_buffers
+      mode: PCT
+      min_val: 0.10
+      max_val: 2
+      interval: 0.1
+  - generator: CategoricalKnobGenerator
+    name: generator7
+    args:
+      knob_name: enable_seqscan
+      values:
+        - True
+        - False
+  - generator: CategoricalKnobGenerator
+    name: generator8
+    args:
+      knob_name: wal_level
+      values:
         - "minimal"
         - "replica"

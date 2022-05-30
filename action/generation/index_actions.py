@@ -66,9 +66,9 @@ class DropIndexGenerator(ActionGenerator):
     For each existing index, yield a DROP INDEX statement.
     '''
 
-    def __init__(self, conn: Connector) -> None:
+    def __init__(self, connector: Connector, **kwargs) -> None:
         ActionGenerator.__init__(self)
-        self.indexes = conn.get_index_info()
+        self.indexes = connector.get_index_info()
     def __iter__(self):
         for ind in self.indexes:
             yield DropIndexAction(ind[0])
@@ -80,9 +80,9 @@ class ExhaustiveIndexGenerator(ActionGenerator):
     for each table's columns.
     '''
 
-    def __init__(self, conn: Connector, max_width=1) -> None:
+    def __init__(self, connector: Connector, max_width=1, **kwargs) -> None:
         ActionGenerator.__init__(self)
-        table_info = conn.get_table_info()
+        table_info = connector.get_table_info()
         self.tables = list(table_info.keys())
         joint_refs = {k: defaultdict(lambda: defaultdict(np.uint64))
                       for k in self.tables}
@@ -117,7 +117,7 @@ class WorkloadIndexGenerator(ActionGenerator):
     '''
 
     # TODO: change this to take workload object instead of joint_refs
-    def __init__(self, workload: Workload, max_width=1) -> None:
+    def __init__(self, workload: Workload, max_width=1, **kwargs) -> None:
         ActionGenerator.__init__(self)
         joint_refs = workload.get_where_colrefs()
         self.tables = list(joint_refs.keys())
@@ -153,13 +153,14 @@ class TypedIndexGenerator(ActionGenerator):
     for each table's columns which appears together.
     '''
 
-    def __init__(self, upstream: ActionGenerator) -> None:
+    def __init__(self, upstream: ActionGenerator, types, **kwargs) -> None:
         ActionGenerator.__init__(self)
         self.upstream = upstream
+        self.types = types
 
     def __iter__(self) -> str:
         for orig_action in self.upstream.items():
-            for using in ["HASH", "BRIN"]:
+            for using in self.types:
                 new_action = copy.deepcopy(orig_action)
                 new_action.using = using
                 yield new_action

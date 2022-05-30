@@ -12,13 +12,14 @@ class CategoricalKnobGenerator(ActionGenerator):
     def __init__(
             self,
             connector: Connector,
-            name: str,
+            knob_name: str,
             values: List[str],
-            alterSystem=False
+            alterSystem=False,
+            **kwargs
     ):
         ActionGenerator.__init__(self)
         self.connector = connector
-        self.name = name
+        self.knob_name = knob_name
         self.type = type
         self.generate_values = []
         self.alterSystem = alterSystem
@@ -26,12 +27,12 @@ class CategoricalKnobGenerator(ActionGenerator):
         self.illegal_knob = False
 
         # validity check
-        knob = connector.get_config(name)
+        knob = connector.get_config(knob_name)
         vartype = knob['vartype']
         legal_enumvals = knob['enumvals']
 
         if vartype not in ['bool', 'enum']:
-            raise TypeError(f"{name} ({vartype}) is not a categorical knob (i.e. bool or enum)")
+            raise TypeError(f"{knob_name} ({vartype}) is not a categorical knob (i.e. bool or enum)")
 
         if vartype == 'bool':
             legal_enumvals = {True, False}  # strings or booleans are ok
@@ -45,7 +46,7 @@ class CategoricalKnobGenerator(ActionGenerator):
 
     def __iter__(self):
         for val in self.generate_values:
-            yield KnobAction(self.name, val, self.alterSystem)
+            yield KnobAction(self.knob_name, val, self.alterSystem)
 
     # def __eq__(self, other):
     #     return self.name == other.name and self.generate_values == other.generate_values and self.alterSystem == other.alterSystem

@@ -11,16 +11,24 @@ from pglast.enums.parsenodes import *
 
 from enum import Enum
 
-
 class KnobAction(Action):
-    def __init__(self, name, setting: str = None, alterSystem = False):
+    def __init__(self, name, setting = None, alterSystem = False):
         Action.__init__(self)
         self.name = name
         self.setting = setting
         self.alterSystem = alterSystem
 
     def _to_sql(self):
-        setArg = None if self.setting is None else [ast.A_Const(ast.String(self.setting))]
+        setArg = None
+        if (type(self.setting) == int):
+            setArg = [ast.A_Const(ast.Integer(self.setting))]
+        if (type(self.setting) == float):
+            setArg = [ast.A_Const(ast.Float(str(self.setting)))]
+        if (type(self.setting) == bool):
+            setArg = [ast.A_Const(ast.String('t' if self.setting else 'f'))]
+        if (type(self.setting) == str):
+            setArg = [ast.A_Const(ast.String(self.setting))]
+
         setKind = VariableSetKind.VAR_SET_DEFAULT if setArg is None else VariableSetKind.VAR_SET_VALUE
         self.ast = ast.VariableSetStmt(
             kind=setKind,
@@ -60,19 +68,35 @@ class NumericalKnobGenerator(ActionGenerator):
         self.maxVal = maxVal
         self.interval = interval
 
+        knob = connector.get_config(name)
+
+        if knob['vartype'] not in ['integer', 'real']:
+            raise TypeError(f"{name} ({knob['vartype']}) is not a numerical knob (i.e. real or integer)")
+        
+        self.valType = float if knob['vartype'] == 'real' else int
+        self.curVal = self.valType(knob['setting'])
+
+        # Check out of range min/max vals
+        if self.maxVal > self.valType(knob['max_val']):
+            raise ValueError(
+                f"max_val exceeds legal limit ({knob['max_val']}) for {name}")
+        if self.minVal < self.valType(knob['min_val']):
+            raise ValueError(
+                f"max_val exceeds legal limit ({knob['min_val']}) for {name}")
+
     def __iter__(self):
-        val, _ = self.connector.get_config(self.name)
+        val = self.curVal
         change = self.minVal
         while change <= self.maxVal:
-            newVal = str(val)
+            newVal = val
             if self.type == KnobType.PCT:
-                newVal = str(round(float(val) * change,2))
+                newVal = val * change
             elif self.type == KnobType.DELTA:
-                newVal = str(float(val) + change)
+                newVal = val + change
             elif self.type == KnobType.ABSOLUTE:
-                newVal = str(change)
+                newVal = change
             elif self.type == KnobType.POW2:
-                newVal = str(2**change)
+                newVal = 2**change
             else:
                 newVal = None
             yield KnobAction(self.name, newVal)

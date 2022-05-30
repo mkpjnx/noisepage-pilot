@@ -26,25 +26,21 @@ class CategoricalKnobGenerator(ActionGenerator):
         self.illegal_knob = False
 
         # validity check
-        try:
-            vartype, legal_enumvals = connector.get_categorical_type_with_values(name)  # return 'enum', ['minimal', 'replica', 'logical']
-        except IndexError as e:
-            print("error in categorical args of {}, index name not found!".format(name))
-            self.illegal_knob = True
-            return
+        knob = connector.get_config(name)
+        vartype = knob['vartype']
+        legal_enumvals = knob['enumvals']
 
         if vartype not in ['bool', 'enum']:
-            print("vartype: {} not in ['bool', 'enum']".format(vartype))
-            raise TypeError("wrong config: knob {} type not in ['bool', 'enum']".format(name))
+            raise TypeError(f"{name} ({vartype}) is not a categorical knob (i.e. bool or enum)")
 
         if vartype == 'bool':
-            legal_enumvals = {'on', 'off', True, False}  # strings or booleans are ok
+            legal_enumvals = {True, False}  # strings or booleans are ok
         for val in values:
             if val not in legal_enumvals:
                 # TODO: raise error or keep going?
-                self.illegal_options.append(val)
+                pass
             else:
-                self.generate_values.append(str(val))
+                self.generate_values.append(val)
 
 
     def __iter__(self):

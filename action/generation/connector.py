@@ -24,6 +24,14 @@ class Connector():
 
         self.refresh_stats()
 
+        # reflect pg_settings for knob table schema
+        self._catalog_meta = MetaData()
+        self._catalog_meta.reflect(
+            self._connection,
+            schema = 'pg_catalog',
+            views=True,
+            only=['pg_settings'])
+
     def close(self):
         self._connection.close()
         logging.debug(
@@ -36,8 +44,7 @@ class Connector():
 
     def get_table_info(self, refresh = False) -> Dict[str, List[str]]:
         if refresh:
-            self._metadata = MetaData()
-            self._metadata.reflect(self._connection)
+            self.refresh_stats()
 
         info = {
             name: [c.name for c in table.columns] 
@@ -47,8 +54,7 @@ class Connector():
 
     def get_index_info(self, refresh = False) -> List[Tuple[str, str, List[str]]]:
         if refresh:
-            self._metadata = MetaData()
-            self._metadata.reflect(self._connection)
+            self.refresh_stats()
 
         info = []
         for table in self._metadata.sorted_tables:
@@ -79,15 +85,11 @@ class Connector():
     #     '''
     #     return self._connection.execute(query)
 
-    # BEGIN knob interactions
     def get_config(self, name):
         # TODO(Mike): Add error checking (throw err if knob does not exists)
-        query = f"SELECT setting, unit FROM pg_settings WHERE name = '{name}';"
-        return list(self._connection.execute(query))[0]
-    # We should not have knob actions here.
-    def get_categorical_type_with_values(self, name):
-        # TODO(Mike): Add error checking (throw err if knob does not exists)
-        query = f"SELECT vartype, enumvals FROM pg_settings WHERE name = '{name}';"
-        return list(self._connection.execute(query))[0]
-
-    # END knob interactions
+        pg_settings = self._catalog_meta.tables['pg_catalog.pg_settings']
+        stmt = select(pg_settings).where(pg_settings.c.name == name)
+        try:
+            return self._connection.execute(stmt).first()
+        except:
+            raise ValueError(f'{name} is not a valid knob')

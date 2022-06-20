@@ -1,5 +1,6 @@
-from knob_actions import KnobAction
 from action import ActionGenerator
+
+from rules.knob_action import KnobAction
 from connector import Connector
 from typing import List
 

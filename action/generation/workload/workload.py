@@ -238,14 +238,3 @@ class Workload:
 
     def get_group_by_colrefs(self):
         return self.colrefs["group_by_colrefs"]
-
-
-if __name__ == "__main__":
-    workload = Workload('workload.csv', Connector())
-    print("WHERE COLREFS:")
-    print(workload.get_where_colrefs())
-    print("GB COLREFS:")
-    print(workload.get_group_by_colrefs())
-    # looks like:
-    # where_colrefs defaultdict(<function get_workload_colrefs.<locals>.<dictcomp>.<lambda> at 0x7f195300eaf0>, {'review': defaultdict(<class 'numpy.uint64'>, {('u_id',): 1.0})})
-    # group_by_colrefs defaultdict(<function get_workload_colrefs.<locals>.<dictcomp>.<lambda> at 0x7f1965f67040>, {'trust': defaultdict(<class 'numpy.uint64'>, {('target_u_id', 'source_u_id'): 88.0, ('source_u_id',): 37.0}), 'review': defaultdict(<class 'numpy.uint64'>, {('i_id',): 99.0, ('u_id',): 30.0, ('i_id', 'u_id'): 30.0, ('u_id', 'i_id'): 28.0}), 'item': defaultdict(<class 'numpy.uint64'>, {('i_id',): 62.0}), 'useracct': defaultdict(<class 'numpy.uint64'>, {('u_id',): 61.0})})

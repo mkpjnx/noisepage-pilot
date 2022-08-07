@@ -1,6 +1,6 @@
 from action import ActionGenerator
 
-from rules.knob_action import KnobAction
+from rules.knob_action import Knob, KnobAction
 from connector import Connector
 from typing import List
 
@@ -19,7 +19,6 @@ class CategoricalKnobGenerator(ActionGenerator):
             **kwargs
     ):
         ActionGenerator.__init__(self)
-        self.connector = connector
         self.knob_name = knob_name
         self.type = type
         self.generate_values = []
@@ -45,9 +44,10 @@ class CategoricalKnobGenerator(ActionGenerator):
                 self.generate_values.append(val)
 
 
-    def __iter__(self):
+    def get_action(self):
+        target = Knob(self.knob_name)
         for val in self.generate_values:
-            yield KnobAction(self.knob_name, val, self.alterSystem)
+            yield KnobAction(target, val, self.alterSystem)
 
     # def __eq__(self, other):
     #     return self.name == other.name and self.generate_values == other.generate_values and self.alterSystem == other.alterSystem

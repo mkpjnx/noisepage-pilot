@@ -1,18 +1,17 @@
 # noqa: E501 inspired by https://github.com/hyrise/index_selection_evaluation/blob/ca1dc87e20fe64f0ef962492597b77cd1916b828/selection/dbms/postgres_dbms.py
-import constants
 import logging
 from sqlalchemy import *
 from typing import List, Dict, Tuple
 
 
 class Connector():
-    def __init__(self):
+    def __init__(self, dbname = None, user = None, password = None, host = None):
 
         cargs = {
-            'dbname':constants.DB_NAME,
-            'user':constants.DB_USER,
-            'password':constants.DB_PASS,
-            'host':constants.DB_HOST
+            'dbname':dbname,
+            'user':user,
+            'password':password,
+            'host':host
         }
         self._engine = create_engine("postgresql+psycopg2://", connect_args=cargs)
         self._connection = self._engine.connect()
@@ -20,7 +19,7 @@ class Connector():
         
         
         logging.debug(
-            f"Connected to {constants.DB_NAME} as {constants.DB_USER}")
+            f"Connected to {DB_NAME} as {DB_USER}")
 
         self.refresh_stats()
 
@@ -35,7 +34,7 @@ class Connector():
     def close(self):
         self._connection.close()
         logging.debug(
-            f"Disconnected from {constants.DB_NAME} as {constants.DB_USER}")
+            f"Disconnected from {DB_NAME} as {DB_USER}")
 
     def refresh_stats(self):
         self._connection.execute("ANALYZE;")

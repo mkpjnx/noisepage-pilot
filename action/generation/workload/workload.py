@@ -1,4 +1,5 @@
 from collections import defaultdict
+from random import sample
 import numpy as np
 import pandas as pd
 import pglast
@@ -218,8 +219,8 @@ def _get_workload_colrefs(filtered):
     return table_colrefs_joint_counts
 
 class Workload:
-    def __init__(self, workload_csv_file_name: str, db_connector: Connector):
-
+    def __init__(self, workload_csv_file_name: str, db_connector: Connector, sample_size = 500):
+        self.sample_size = sample_size
         self.file_name = workload_csv_file_name
         self.conn = db_connector
 
@@ -230,8 +231,12 @@ class Workload:
     def _parse(self):
         # execute log parsing for workload, store each type of col_refs in a per-table basis
         parsed = _parse_csv_log(self.file_name)
-        filtered = _aggregate_templates(parsed, self.conn)
-        self.colrefs = _get_workload_colrefs(filtered)
+        self.sample = parsed['queries'].sample(self.sample_size)
+        self.filtered = _aggregate_templates(parsed, self.conn)
+        self.colrefs = _get_workload_colrefs(self.filtered)
+
+    def export_sample(self, file = None):
+        print(";\n".join(self.sample.values), file = file)
 
     def get_where_colrefs(self):
         return self.colrefs["where_colrefs"]

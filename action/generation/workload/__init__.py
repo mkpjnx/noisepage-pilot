@@ -1,1 +1,1 @@
-from workload.workload import *
+from .workload import *

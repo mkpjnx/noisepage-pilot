@@ -1,34 +1,63 @@
-from action import Action
+from sqlalchemy import over
+from action import Configuration, Action
 
 from pglast import ast, stream
 from pglast.enums.parsenodes import *
 
+class Index(Configuration):
+    def __init__(self, table, cols, using=None, override_name = None):
+        self._table = table
+        self._cols = cols
+        self._using = using
+        self._override_name = override_name
+
+    @property
+    def identifier(self):
+        columns_string = ",".join(map(str, self._cols))
+        using_string = "" if self._using is None else "USING {self.using}"
+        return f"Index {self.index_name} on {self._table}({columns_string}){using_string}"
+
+    @property
+    def table(self):
+        return self._table
+    
+    @property
+    def cols(self):
+        return self._cols
+    
+    @property
+    def using(self):
+        return self._using
+
+    @property
+    def index_name(self):
+        if self._override_name is not None:
+            return self._override_name
+        colnames = [c.replace("_", "") for c in self._cols]
+        return f'idx_{self._table}_{"_".join(colnames)}'
 
 class CreateIndexAction(Action):
-    def __init__(self, table, cols, using=None):
-        Action.__init__(self)
-        self.table = table
-        self.cols = cols
-        self.using = using
+    def __init__(self, target: Index):
+        Action.__init__(self, target)
 
-    def index_name(self):
-        colnames = [c.replace("_", "") for c in self.cols]
-        return f'idx_{self.table}_{"_".join(colnames)}'
+    def to_json(self):
+        return {'type':'CreateIndex','target':self.target.identifier}
 
-    def _to_sql(self):
-        index_name = self.index_name()
+    def to_sql(self):
+        index = self.target
+        index_name = index.index_name
 
         self.ast = ast.IndexStmt(
             idxname=index_name,
-            relation=ast.RangeVar(relname=self.table, inh=True),
-            accessMethod='btree' if self.using is None else self.using,
+            relation=ast.RangeVar(relname=index.table, inh=True),
+            accessMethod='btree' if index.using is None else index.using,
             indexParams=tuple(
                 [
                     ast.IndexElem(
                         col,
                         ordering=SortByDir.SORTBY_DEFAULT,
                         nulls_ordering=SortByNulls.SORTBY_NULLS_DEFAULT,
-                    ) for col in self.cols]
+                    ) for col in index.cols]
             ),
             idxcomment=None,
             if_not_exists=True,
@@ -37,15 +66,16 @@ class CreateIndexAction(Action):
 
 
 class DropIndexAction(Action):
-    def __init__(self, idxname, cascade=False):
-        Action.__init__(self)
-        self.idxname = idxname
+    def __init__(self, target: Index, cascade=False):
+        Action.__init__(self, target)
         self.cascade = cascade
 
-    def _to_sql(self):
+    def to_json(self):
+        return {'type':'DropIndex','target':self.target.identifier,'cascade':False}
 
+    def to_sql(self):
         self.ast = ast.DropStmt(
-            objects=[self.idxname],
+            objects=[self.target.index_name],
             removeType=ObjectType.OBJECT_INDEX,
             behavior=DropBehavior.DROP_CASCADE if self.cascade else DropBehavior.DROP_RESTRICT,
             missing_ok=True,

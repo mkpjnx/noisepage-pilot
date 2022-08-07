@@ -8,7 +8,7 @@ from action import ActionGenerator
 from connector import Connector
 from workload import Workload
 
-from rules.index_action import CreateIndexAction, DropIndexAction
+from rules.index_action import Index, CreateIndexAction, DropIndexAction
 
 class DropIndexGenerator(ActionGenerator):
     '''
@@ -18,9 +18,10 @@ class DropIndexGenerator(ActionGenerator):
     def __init__(self, connector: Connector, **kwargs) -> None:
         ActionGenerator.__init__(self)
         self.indexes = connector.get_index_info()
-    def __iter__(self):
+    def get_action(self):
         for ind in self.indexes:
-            yield DropIndexAction(ind[0])
+            target = Index(ind[1], ind[2], override_name = ind[0])
+            yield DropIndexAction(target)
 
 
 class ExhaustiveIndexGenerator(ActionGenerator):
@@ -29,7 +30,7 @@ class ExhaustiveIndexGenerator(ActionGenerator):
     for each table's columns.
     '''
 
-    def __init__(self, connector: Connector, max_width=1, **kwargs) -> None:
+    def __init__(self, connector, max_width=1, **kwargs) -> None:
         ActionGenerator.__init__(self)
         table_info = connector.get_table_info()
         self.tables = list(table_info.keys())
@@ -45,9 +46,10 @@ class ExhaustiveIndexGenerator(ActionGenerator):
         for cols in self.joint_refs[table]:
             for perm in itertools.permutations(cols, width):
                 col_perms.add(perm)
-                yield CreateIndexAction(table, perm)
+                target = Index(table, perm)
+                yield CreateIndexAction(target)
 
-    def __iter__(self) -> str:
+    def get_action(self):
         for table in self.tables:
             for width in range(1, self.max_width + 1):
                 for action in self._iter_table_widths(table, width):
@@ -82,9 +84,10 @@ class WorkloadIndexGenerator(ActionGenerator):
                 if perm in col_perms:
                     continue
                 col_perms.add(perm)
-                yield CreateIndexAction(table, perm)
+                target = Index(table, perm)
+                yield CreateIndexAction(target)
 
-    def __iter__(self) -> str:
+    def get_action(self):
         for table in self.tables:
             for width in range(1, self.max_width + 1):
                 for action in self._iter_table_widths(table, width):
@@ -108,7 +111,7 @@ class TypedIndexGenerator(ActionGenerator):
         self.types = types
 
     def __iter__(self) -> str:
-        for orig_action in self.upstream.items():
+        for orig_action in self.upstream.generate_all():
             for using in self.types:
                 new_action = copy.deepcopy(orig_action)
                 new_action.using = using

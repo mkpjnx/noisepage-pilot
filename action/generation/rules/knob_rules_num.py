@@ -1,7 +1,7 @@
 from action import ActionGenerator
 
 from connector import Connector
-from rules.knob_action import KnobAction
+from rules.knob_action import Knob, KnobAction
 from enum import Enum, auto
 
 
@@ -28,7 +28,6 @@ class NumericalKnobGenerator(ActionGenerator):
         **kwargs
     ):
         ActionGenerator.__init__(self)
-        self.connector = connector
         self.mode = KnobType[mode]
         self.min_val = min_val
         self.max_val = max_val
@@ -44,7 +43,9 @@ class NumericalKnobGenerator(ActionGenerator):
         self.cur_val = self.valType(knob['setting'])
         self.knob = knob
 
-    def __iter__(self):
+    def get_action(self):
+        target = Knob(self.knob['name'])
+
         val = self.cur_val
         change = self.min_val
         while change <= self.max_val:
@@ -69,5 +70,5 @@ class NumericalKnobGenerator(ActionGenerator):
                 raise ValueError(
                     f"min_val exceeds legal limit ({self.knob['min_val']}) for {self.knob['name']}")
 
-            yield KnobAction(self.knob['name'], new_val)
+            yield KnobAction(target, new_val)
             change += self.interval

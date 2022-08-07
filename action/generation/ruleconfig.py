@@ -43,10 +43,3 @@ def parse_config(file: str, conn: Connector) -> Dict[str, ActionGenerator]:
             new_generator = rules.__dict__[gen_type](**gen_args)
             generators_map[gen_name] = new_generator
     return generators_map
-
-
-if __name__ == "__main__":
-    generators_map = parse_config('temp.yaml', Connector())
-    for _, gen in generators_map.items():
-        for action in gen:
-            print(str(action))

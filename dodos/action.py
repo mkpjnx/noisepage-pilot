@@ -22,7 +22,7 @@ OPENSPIEL_BUILD_PATH = (BUILD_PATH / "selection/open_spiel/build/").absolute()
 HYPOPG_BUILD_PATH = (BUILD_PATH / "selection/hypopg/build/").absolute()
 
 # Output: predictions.
-ARTIFACT_ACTIONS = ARTIFACTS_PATH / "actions.sql"
+ARTIFACT_ACTIONS = ARTIFACTS_PATH / "actions.json"
 ARTIFACT_DATABASE_GAME = ARTIFACTS_PATH / "database_game"
 
 
@@ -42,9 +42,8 @@ def task_action_generation():
 
     def generate_actions(configfile):
         cmd = (
-            f'python3 ./action/generation/action_selection.py '
-            f'--output-sql {ARTIFACT_ACTIONS} '
-            f'--config-file {configfile} ')
+            f"python3 ./action/generation/engine.py " f"--output-sql {ARTIFACT_ACTIONS} " f"--config-file {configfile} "
+        )
         print(cmd)
         return cmd
 
@@ -54,7 +53,7 @@ def task_action_generation():
             # Generate create index suggestions for TPC-C.
             CmdAction(generate_actions),
         ],
-        "file_dep": ["./action/generation/action_selection.py"],
+        "file_dep": ["./action/generation/engine.py"],
         "targets": [ARTIFACT_ACTIONS],
         "uptodate": [False],
         "verbosity": VERBOSITY_DEFAULT,

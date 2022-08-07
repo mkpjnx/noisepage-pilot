@@ -4,7 +4,7 @@
     <!-- Connection details -->
     <type>POSTGRES</type>
     <driver>org.postgresql.Driver</driver>
-    <url>jdbc:postgresql://localhost:5432/{DBNAME}?preferQueryMode=simple</url>
+    <url>jdbc:postgresql://localhost:5432/{DBNAME}?preferQueryMode=simple&amp;reWriteBatchedInserts=true</url>
     <username>{USER}</username>
     <password>{PASSWORD}</password>
     <isolation>TRANSACTION_SERIALIZABLE</isolation>

@@ -1,44 +1,42 @@
-from typing import List, Dict
-import yaml
-
-from action import ActionGenerator
-from connector import Connector
+from typing import Dict
 
 import rules
-
+import yaml
+from connector import Connector
 from workload import Workload
+
+from action import ActionGenerator
 
 
 def parse_config(file: str, conn: Connector) -> Dict[str, ActionGenerator]:
     # To deduplicate exact same generators_map with same attrs, can use set()
     generators_map = {}  # generator name - generator
-    with open(file, 'r') as f:
+    with open(file, "r") as f:
         config = yaml.safe_load(f)
-        for generator in config['Generators']:
-            gen_type = generator['generator']
+        for generator in config["Generators"]:
+            gen_type = generator["generator"]
 
-            gen_args = generator['args']
+            gen_args = generator["args"]
             gen_args = gen_args if gen_args is not None else {}
 
-            gen_name = generator['name']
+            gen_name = generator["name"]
 
             new_generator = None
-            gen_args['connector'] = conn
+            gen_args["connector"] = conn
 
-            if 'upstream' in gen_args:
-                upstream = gen_args['upstream']
-                if not gen_args['upstream'] in generators_map:
-                    raise Exception(
-                        'Upstream generator {} not found'.format(upstream))
-                gen_args['upstream'] = generators_map[upstream]
+            if "upstream" in gen_args:
+                upstream = gen_args["upstream"]
+                if not gen_args["upstream"] in generators_map:
+                    raise Exception("Upstream generator {} not found".format(upstream))
+                gen_args["upstream"] = generators_map[upstream]
 
-            if 'workload' in gen_args:
-                gen_args['workload'] = Workload(gen_args['workload'], conn)
+            if "workload" in gen_args:
+                gen_args["workload"] = Workload(gen_args["workload"], conn)
             # TODO: remove this when all generators_map are implemented
 
             print(generator)
             if gen_name in generators_map:
-                raise Exception('Duplicated generator name {}'.format(gen_name))
+                raise Exception("Duplicated generator name {}".format(gen_name))
 
             new_generator = rules.__dict__[gen_type](**gen_args)
             generators_map[gen_name] = new_generator

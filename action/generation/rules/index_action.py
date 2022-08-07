@@ -1,11 +1,11 @@
-from sqlalchemy import over
-from action import Configuration, Action
-
+import pglast.enums.parsenodes as pnodes
 from pglast import ast, stream
-from pglast.enums.parsenodes import *
+
+from action import Action, Configuration
+
 
 class Index(Configuration):
-    def __init__(self, table, cols, using=None, override_name = None):
+    def __init__(self, table, cols, using=None, override_name=None):
         self._table = table
         self._cols = cols
         self._using = using
@@ -20,11 +20,11 @@ class Index(Configuration):
     @property
     def table(self):
         return self._table
-    
+
     @property
     def cols(self):
         return self._cols
-    
+
     @property
     def using(self):
         return self._using
@@ -36,12 +36,13 @@ class Index(Configuration):
         colnames = [c.replace("_", "") for c in self._cols]
         return f'idx_{self._table}_{"_".join(colnames)}'
 
+
 class CreateIndexAction(Action):
     def __init__(self, target: Index):
         Action.__init__(self, target)
 
     def to_json(self):
-        return {'type':'CreateIndex','target':self.target.identifier}
+        return {"type": "CreateIndex", "target": self.target.identifier}
 
     def to_sql(self):
         index = self.target
@@ -50,14 +51,16 @@ class CreateIndexAction(Action):
         self.ast = ast.IndexStmt(
             idxname=index_name,
             relation=ast.RangeVar(relname=index.table, inh=True),
-            accessMethod='btree' if index.using is None else index.using,
+            accessMethod="btree" if index.using is None else index.using,
             indexParams=tuple(
                 [
                     ast.IndexElem(
                         col,
-                        ordering=SortByDir.SORTBY_DEFAULT,
-                        nulls_ordering=SortByNulls.SORTBY_NULLS_DEFAULT,
-                    ) for col in index.cols]
+                        ordering=pnodes.SortByDir.SORTBY_DEFAULT,
+                        nulls_ordering=pnodes.SortByNulls.SORTBY_NULLS_DEFAULT,
+                    )
+                    for col in index.cols
+                ]
             ),
             idxcomment=None,
             if_not_exists=True,
@@ -71,13 +74,13 @@ class DropIndexAction(Action):
         self.cascade = cascade
 
     def to_json(self):
-        return {'type':'DropIndex','target':self.target.identifier,'cascade':False}
+        return {"type": "DropIndex", "target": self.target.identifier, "cascade": False}
 
     def to_sql(self):
         self.ast = ast.DropStmt(
             objects=[self.target.index_name],
-            removeType=ObjectType.OBJECT_INDEX,
-            behavior=DropBehavior.DROP_CASCADE if self.cascade else DropBehavior.DROP_RESTRICT,
+            removeType=pnodes.ObjectType.OBJECT_INDEX,
+            behavior=pnodes.DropBehavior.DROP_CASCADE if self.cascade else pnodes.DropBehavior.DROP_RESTRICT,
             missing_ok=True,
         )
         return stream.RawStream(semicolon_after_last_statement=True)(self.ast)

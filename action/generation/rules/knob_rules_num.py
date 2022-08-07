@@ -1,8 +1,9 @@
-from action import ActionGenerator
+from enum import Enum, auto
 
 from connector import Connector
 from rules.knob_action import Knob, KnobAction
-from enum import Enum, auto
+
+from action import ActionGenerator
 
 
 class KnobType(Enum):
@@ -13,19 +14,19 @@ class KnobType(Enum):
 
 
 class NumericalKnobGenerator(ActionGenerator):
-    '''
+    """
     Create a ALTER SYSTEM stmt for a given knob name and numerical range
-    '''
+    """
 
     def __init__(
         self,
         connector: Connector,
         knob_name: str,
-        mode: str = 'PCT',
+        mode: str = "PCT",
         min_val: float = 0.1,
         max_val: float = 5,
         interval: float = 0.1,
-        **kwargs
+        **kwargs,
     ):
         ActionGenerator.__init__(self)
         self.mode = KnobType[mode]
@@ -35,16 +36,15 @@ class NumericalKnobGenerator(ActionGenerator):
 
         knob = connector.get_config(knob_name)
 
-        if knob['vartype'] not in ['integer', 'real']:
-            raise TypeError(
-                f"{knob} ({knob['vartype']}) is not a numerical knob (i.e. real or integer)")
+        if knob["vartype"] not in ["integer", "real"]:
+            raise TypeError(f"{knob} ({knob['vartype']}) is not a numerical knob (i.e. real or integer)")
 
-        self.valType = float if knob['vartype'] == 'real' else int
-        self.cur_val = self.valType(knob['setting'])
+        self.valType = float if knob["vartype"] == "real" else int
+        self.cur_val = self.valType(knob["setting"])
         self.knob = knob
 
     def get_action(self):
-        target = Knob(self.knob['name'])
+        target = Knob(self.knob["name"])
 
         val = self.cur_val
         change = self.min_val
@@ -62,13 +62,11 @@ class NumericalKnobGenerator(ActionGenerator):
                 new_val = None
 
             # Check legality:
-            if new_val > self.valType(self.knob['max_val']):
-                raise ValueError(
-                    f"max_val exceeds legal limit ({self.knob['max_val']}) for {self.knob['name']}")
+            if new_val > self.valType(self.knob["max_val"]):
+                raise ValueError(f"max_val exceeds legal limit ({self.knob['max_val']}) for {self.knob['name']}")
 
-            if new_val < self.valType(self.knob['min_val']):
-                raise ValueError(
-                    f"min_val exceeds legal limit ({self.knob['min_val']}) for {self.knob['name']}")
+            if new_val < self.valType(self.knob["min_val"]):
+                raise ValueError(f"min_val exceeds legal limit ({self.knob['min_val']}) for {self.knob['name']}")
 
             yield KnobAction(target, new_val)
             change += self.interval

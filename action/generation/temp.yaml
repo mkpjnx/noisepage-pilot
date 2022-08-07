@@ -3,10 +3,15 @@ Connector:
   user: ""
   password: ""
   host: ""
+Workload:
+  csvlog: artifacts/action/FILLMEIN.csv
+  export:
+    sample_size: 500
+    output: artifacts/action/FILLMEIN.sql 
 Generators:
-  - generator: DropIndexGenerator
-    name: generator1
-    args:
+  # - generator: DropIndexGenerator
+  #   name: generator1
+  #   args:
   # - generator: ExhaustiveIndexGenerator
   #   name: generator2
   #   args:
@@ -14,8 +19,8 @@ Generators:
   - generator: WorkloadIndexGenerator
     name: generator3
     args:
-      workload: workload.csv
-      max_width: 3
+      workload: artifacts/action/FILLMEIN.csv
+      max_width: 4
   # - generator: TypedIndexGenerator
   #   name: generator4
   #   args:

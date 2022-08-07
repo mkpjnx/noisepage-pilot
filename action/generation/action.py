@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-class Configuration(ABC):
 
+class Configuration(ABC):
     @property
     @abstractmethod
     def identifier(self):
@@ -18,6 +18,7 @@ class Configuration(ABC):
 
     def __hash__(self) -> int:
         return hash(self.identifier)
+
 
 class Action(ABC):
     def __init__(self, target: Configuration):
@@ -38,6 +39,7 @@ class Action(ABC):
     def __repr__(self):
         return self.to_sql()
 
+
 class ActionGenerator(ABC):
     def __init__(self):
         self.generator = self.get_action()
@@ -46,13 +48,13 @@ class ActionGenerator(ABC):
     def get_action(self):
         pass
 
-    def get_n(self, n = 1) -> int:
+    def get_n(self, n=1) -> int:
         i = 0
         actions = []
-        while(i < n):
+        while i < n:
             try:
                 actions.append(next(self.generator))
-                i+=1
+                i += 1
             except StopIteration:
                 return actions
         return actions

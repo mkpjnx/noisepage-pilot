@@ -1,13 +1,12 @@
+import re
+import time
 from collections import defaultdict
-from random import sample
+from typing import List
+
 import numpy as np
 import pandas as pd
 import pglast
-# weird issue if comment this import
-from pglast import visitors
-import re
-from typing import List
-
+import pglast.visitors
 from connector import Connector
 
 _PG_LOG_COLUMNS: List[str] = [
@@ -69,26 +68,27 @@ def _parse_csv_log(file):
     and corresponding queries
     """
     df = pd.read_csv(
-        file, names=_PG_LOG_COLUMNS,
-        parse_dates=["log_time", "session_start_time"],
+        file,
+        names=_PG_LOG_COLUMNS,
+        # parse_dates=["log_time", "session_start_time"],
         usecols=[
-            "log_time",
-            "session_start_time",
-            "command_tag",
+            # "log_time",
+            # "session_start_time",
+            # "command_tag",
             "message",
-            "detail",
+            # "detail",
         ],
         header=None,
-        index_col=False)
+        index_col=False,
+    )
 
     # filter out empty messages
     df = df[df["message"] != ""]
-    df['detail'].fillna("", inplace=True)
+    # df['detail'].fillna("", inplace=True)
     # extract queries and toss commits, sets, etc.
-    df['queries'] = _extract_query(df['message'])
-    df = df[df['queries'] != ""]
-    df['fingerprint'] = df['queries'].apply(pglast.parser.fingerprint)
-    return df[['fingerprint', 'queries']]
+    df["queries"] = _extract_query(df["message"])
+    df = df[df["queries"] != ""]
+    return df[["queries"]]
 
 
 def _find_colrefs(node: pglast.node.Node):
@@ -102,9 +102,7 @@ def _find_colrefs(node: pglast.node.Node):
         if type(subnode) is pglast.node.Scalar:
             continue
         if type(subnode.ast_node) is pglast.ast.ColumnRef:
-            colref = tuple([
-                n.val.value for n in subnode.fields
-                if type(n.ast_node) == pglast.ast.String])
+            colref = tuple([n.val.value for n in subnode.fields if type(n.ast_node) == pglast.ast.String])
             if len(colref) > 0:
                 colrefs.append(colref)
     return colrefs
@@ -128,21 +126,19 @@ def _get_all_colrefs(sql, table_cols):
     for node in pglast.node.Node(tree).traverse():
         if type(node) is pglast.node.Scalar:
             continue
-        if 'whereClause' in node.attribute_names:
+        if "whereClause" in node.attribute_names:
             where_colrefs += _find_colrefs(node.whereClause)
-        if 'groupClause' in node.attribute_names:
+        if "groupClause" in node.attribute_names:
             group_by_colrefs += _find_colrefs(node.groupClause)
-        if 'alias' in node.attribute_names and 'relname' in node.attribute_names:
+        if "alias" in node.attribute_names and "relname" in node.attribute_names:
             if node.alias is pglast.Missing or node.relname is pglast.Missing:
                 continue
             if node.alias.aliasname.value in aliases:
                 print("UH OH, double alias")
             aliases[node.alias.aliasname.value] = node.relname.value
     # resolve aliases and figure out actual table col refs
-    where_potentials = _resolve_colref_aliases(
-        where_colrefs, aliases, referenced_tables, table_cols)
-    group_by_potentials = _resolve_colref_aliases(
-        group_by_colrefs, aliases, referenced_tables, table_cols)
+    where_potentials = _resolve_colref_aliases(where_colrefs, aliases, referenced_tables, table_cols)
+    group_by_potentials = _resolve_colref_aliases(group_by_colrefs, aliases, referenced_tables, table_cols)
     return where_potentials, group_by_potentials
 
 
@@ -157,10 +153,7 @@ def _resolve_colref_aliases(raw_colrefs, aliases, referenced_tables, table_cols)
         # any of the referenced tables
         if len(c) == 1:
             p_col = c[0]
-            potential_tables = [
-                t for t in referenced_tables
-                if t in table_cols and
-                p_col in table_cols[t]]
+            potential_tables = [t for t in referenced_tables if t in table_cols and p_col in table_cols[t]]
 
         # The colref does specify table, also attempt to resolve alias
         if len(c) == 2:
@@ -172,7 +165,8 @@ def _resolve_colref_aliases(raw_colrefs, aliases, referenced_tables, table_cols)
 
         # Only add the table,col pair if it exists in the schema
         potential_colrefs += [
-            (p_t, p_col) for p_t in potential_tables if (p_t in table_cols and p_col in table_cols[p_t])]
+            (p_t, p_col) for p_t in potential_tables if (p_t in table_cols and p_col in table_cols[p_t])
+        ]
     return set(potential_colrefs)
 
 
@@ -183,26 +177,28 @@ def _aggregate_templates(df, conn, percent_threshold=1):
     """
 
     table_cols = conn.get_table_info()
-
-    aggregated = df[['queries', 'fingerprint']]\
-        .groupby('fingerprint')\
-        .agg([pd.DataFrame.sample, "count"])['queries']\
-        .sort_values('count', ascending=False)
-    aggregated['fraction'] = aggregated['count'] / aggregated['count'].sum()
-    aggregated['cumsum'] = aggregated['fraction'].cumsum()
-    filtered = pd.DataFrame(
-        aggregated[aggregated['cumsum'] <= percent_threshold])
+    df["fingerprint"] = df["queries"].apply(pglast.parser.fingerprint)
+    aggregated = (
+        df[["queries", "fingerprint"]]
+        .groupby("fingerprint")
+        .agg([pd.DataFrame.sample, "count"])["queries"]
+        .sort_values("count", ascending=False)
+    )
+    aggregated["fraction"] = aggregated["count"] / aggregated["count"].sum()
+    aggregated["cumsum"] = aggregated["fraction"].cumsum()
+    filtered = pd.DataFrame(aggregated[aggregated["cumsum"] <= percent_threshold])
 
     # get column refs
-    filtered['where_colrefs'], filtered['group_by_colrefs'] = zip(*filtered['sample'].apply(
-        _get_all_colrefs, args=(table_cols,)))
+    filtered["where_colrefs"], filtered["group_by_colrefs"] = zip(
+        *filtered["sample"].apply(_get_all_colrefs, args=(table_cols,))
+    )
 
-    return filtered[['sample', 'count', 'cumsum', 'where_colrefs', 'group_by_colrefs']]
+    return filtered[["sample", "count", "cumsum", "where_colrefs", "group_by_colrefs"]]
 
 
 def _get_workload_colrefs(filtered):
     # TODO: all colref_types extraction are hard coded
-    colref_types = ['where_colrefs', 'group_by_colrefs']
+    colref_types = ["where_colrefs", "group_by_colrefs"]
     table_colrefs_joint_counts = {k: defaultdict(lambda: defaultdict(np.uint64)) for k in colref_types}
 
     for colref_type_str in colref_types:
@@ -214,29 +210,37 @@ def _get_workload_colrefs(filtered):
                 if len(cols_for_tabs) == 0:
                     continue
                 joint_ref = tuple(dict.fromkeys(cols_for_tabs))
-                table_colrefs_joint_counts[colref_type_str][table][joint_ref] += row['count']
+                table_colrefs_joint_counts[colref_type_str][table][joint_ref] += row["count"]
 
     return table_colrefs_joint_counts
 
+
 class Workload:
-    def __init__(self, workload_csv_file_name: str, db_connector: Connector, sample_size = 500):
-        self.sample_size = sample_size
+    def __init__(self, workload_csv_file_name: str, db_connector: Connector):
         self.file_name = workload_csv_file_name
         self.conn = db_connector
 
         # TODO: cleaner format to store these?
         self._parse()
 
-
     def _parse(self):
         # execute log parsing for workload, store each type of col_refs in a per-table basis
-        parsed = _parse_csv_log(self.file_name)
-        self.sample = parsed['queries'].sample(self.sample_size)
-        self.filtered = _aggregate_templates(parsed, self.conn)
-        self.colrefs = _get_workload_colrefs(self.filtered)
+        ts = time.time()
+        self.parsed = _parse_csv_log(self.file_name)
+        print(f"parsed ({time.time() - ts}s)")
 
-    def export_sample(self, file = None):
-        print(";\n".join(self.sample.values), file = file)
+        ts = time.time()
+        self.filtered = _aggregate_templates(self.parsed, self.conn)
+        print(f"aggregated ({time.time() - ts}s)")
+
+        ts = time.time()
+        self.colrefs = _get_workload_colrefs(self.filtered)
+        print(f"extracted colrefs ({time.time() - ts}s)")
+
+    def export_sample(self, sample_size=500, output=None):
+        with open(output, "w") as file:
+            queries = self.parsed["queries"].sample(sample_size).values
+            print(";\n".join(queries), file=file)
 
     def get_where_colrefs(self):
         return self.colrefs["where_colrefs"]

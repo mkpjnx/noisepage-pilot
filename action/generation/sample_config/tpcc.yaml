@@ -5,15 +5,15 @@ Connector:
   host: "localhost"
   port: 5434
 Workloads:
-  - name: tpcc_trace
-    csvlog: /home/peijingx/repos/noisepage-pilot/artifacts/action/tpcc_trace.csv
-    export:
+  - name: tpcc_trace # Name used to reference 
+    csvlog: /home/peijingx/repos/noisepage-pilot/artifacts/action/tpcc_trace.csv # Input CSVLog
+    export: # Export a sample of the queries seen in the csv log, this is used for the index tuner
       sample_size: 500
-      output: sample.sql 
+      output: sample.sql #Output file
 Generators:
-  - generator: DropIndexGenerator
-    name: generator1
-    args:
+  # - generator: DropIndexGenerator
+  #   name: generator1
+  #   args:
   # - generator: ExhaustiveIndexGenerator
   #   name: generator2
   #   args:
@@ -22,7 +22,7 @@ Generators:
     name: generator3
     args:
       workload: tpcc_trace
-      max_width: 1
+      max_width: 2
       clauses: 
         - whereClause
         - groupClause
@@ -35,3 +35,11 @@ Generators:
   #       - BRIN
   #       # - BTREE is not needed: currently we've collect actions from the upstream already
   #     upstream: generator2
+  - generator: NumericalKnobGenerator
+    name: generator5
+    args:
+      knob_name: work_mem
+      mode: POW2
+      min_val: 10
+      max_val: 20
+      interval: 1

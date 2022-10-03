@@ -1,0 +1,688 @@
+{
+    "Index idx_new_order_nodid on new_order(no_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nodid on new_order(no_d_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nooid on new_order(no_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nooid on new_order(no_o_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nowid on new_order(no_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nowid on new_order(no_w_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nodid_nooid on new_order(no_d_id,no_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nodid_nooid on new_order(no_d_id,no_o_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nodid_nowid on new_order(no_d_id,no_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nodid_nowid on new_order(no_d_id,no_w_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nooid_nodid on new_order(no_o_id,no_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nooid_nodid on new_order(no_o_id,no_d_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nooid_nowid on new_order(no_o_id,no_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nooid_nowid on new_order(no_o_id,no_w_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nowid_nodid on new_order(no_w_id,no_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nowid_nodid on new_order(no_w_id,no_d_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nowid_nooid on new_order(no_w_id,no_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nowid_nooid on new_order(no_w_id,no_o_id)"
+            }
+        ]
+    },
+    "Index idx_item_iid on item(i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_item_iid on item(i_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cdid on customer(c_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cdid on customer(c_d_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cid on customer(c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cid on customer(c_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cwid on customer(c_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cwid on customer(c_w_id)"
+            }
+        ]
+    },
+    "Index idx_customer_clast on customer(c_last)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_clast on customer(c_last)"
+            }
+        ]
+    },
+    "Index idx_customer_cfirst on customer(c_first)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cfirst on customer(c_first)"
+            }
+        ]
+    },
+    "Index idx_customer_cdid_cid on customer(c_d_id,c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cdid_cid on customer(c_d_id,c_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cdid_cwid on customer(c_d_id,c_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cdid_cwid on customer(c_d_id,c_w_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cid_cdid on customer(c_id,c_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cid_cdid on customer(c_id,c_d_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cid_cwid on customer(c_id,c_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cid_cwid on customer(c_id,c_w_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cwid_cdid on customer(c_w_id,c_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cwid_cdid on customer(c_w_id,c_d_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cwid_cid on customer(c_w_id,c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cwid_cid on customer(c_w_id,c_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cdid_clast on customer(c_d_id,c_last)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cdid_clast on customer(c_d_id,c_last)"
+            }
+        ]
+    },
+    "Index idx_customer_cdid_cfirst on customer(c_d_id,c_first)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cdid_cfirst on customer(c_d_id,c_first)"
+            }
+        ]
+    },
+    "Index idx_customer_cwid_clast on customer(c_w_id,c_last)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cwid_clast on customer(c_w_id,c_last)"
+            }
+        ]
+    },
+    "Index idx_customer_cwid_cfirst on customer(c_w_id,c_first)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cwid_cfirst on customer(c_w_id,c_first)"
+            }
+        ]
+    },
+    "Index idx_customer_clast_cdid on customer(c_last,c_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_clast_cdid on customer(c_last,c_d_id)"
+            }
+        ]
+    },
+    "Index idx_customer_clast_cwid on customer(c_last,c_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_clast_cwid on customer(c_last,c_w_id)"
+            }
+        ]
+    },
+    "Index idx_customer_clast_cfirst on customer(c_last,c_first)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_clast_cfirst on customer(c_last,c_first)"
+            }
+        ]
+    },
+    "Index idx_customer_cfirst_cdid on customer(c_first,c_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cfirst_cdid on customer(c_first,c_d_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cfirst_cwid on customer(c_first,c_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cfirst_cwid on customer(c_first,c_w_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cfirst_clast on customer(c_first,c_last)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cfirst_clast on customer(c_first,c_last)"
+            }
+        ]
+    },
+    "Index idx_order_line_oloid on order_line(ol_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oloid on order_line(ol_o_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_olwid on order_line(ol_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_olwid on order_line(ol_w_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oldid on order_line(ol_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oldid on order_line(ol_d_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oliid on order_line(ol_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oliid on order_line(ol_i_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oloid_olwid on order_line(ol_o_id,ol_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oloid_olwid on order_line(ol_o_id,ol_w_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oloid_oldid on order_line(ol_o_id,ol_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oloid_oldid on order_line(ol_o_id,ol_d_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_olwid_oloid on order_line(ol_w_id,ol_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_olwid_oloid on order_line(ol_w_id,ol_o_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_olwid_oldid on order_line(ol_w_id,ol_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_olwid_oldid on order_line(ol_w_id,ol_d_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oldid_oloid on order_line(ol_d_id,ol_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oldid_oloid on order_line(ol_d_id,ol_o_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oldid_olwid on order_line(ol_d_id,ol_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oldid_olwid on order_line(ol_d_id,ol_w_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oliid_oloid on order_line(ol_i_id,ol_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oliid_oloid on order_line(ol_i_id,ol_o_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oliid_olwid on order_line(ol_i_id,ol_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oliid_olwid on order_line(ol_i_id,ol_w_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oliid_oldid on order_line(ol_i_id,ol_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oliid_oldid on order_line(ol_i_id,ol_d_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oloid_oliid on order_line(ol_o_id,ol_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oloid_oliid on order_line(ol_o_id,ol_i_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_olwid_oliid on order_line(ol_w_id,ol_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_olwid_oliid on order_line(ol_w_id,ol_i_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oldid_oliid on order_line(ol_d_id,ol_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oldid_oliid on order_line(ol_d_id,ol_i_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_odid on oorder(o_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_odid on oorder(o_d_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_oid on oorder(o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_oid on oorder(o_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_owid on oorder(o_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_owid on oorder(o_w_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_ocid on oorder(o_c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_ocid on oorder(o_c_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_odid_oid on oorder(o_d_id,o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_odid_oid on oorder(o_d_id,o_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_odid_owid on oorder(o_d_id,o_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_odid_owid on oorder(o_d_id,o_w_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_oid_odid on oorder(o_id,o_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_oid_odid on oorder(o_id,o_d_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_oid_owid on oorder(o_id,o_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_oid_owid on oorder(o_id,o_w_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_owid_odid on oorder(o_w_id,o_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_owid_odid on oorder(o_w_id,o_d_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_owid_oid on oorder(o_w_id,o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_owid_oid on oorder(o_w_id,o_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_odid_ocid on oorder(o_d_id,o_c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_odid_ocid on oorder(o_d_id,o_c_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_ocid_odid on oorder(o_c_id,o_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_ocid_odid on oorder(o_c_id,o_d_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_ocid_oid on oorder(o_c_id,o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_ocid_oid on oorder(o_c_id,o_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_ocid_owid on oorder(o_c_id,o_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_ocid_owid on oorder(o_c_id,o_w_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_oid_ocid on oorder(o_id,o_c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_oid_ocid on oorder(o_id,o_c_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_owid_ocid on oorder(o_w_id,o_c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_owid_ocid on oorder(o_w_id,o_c_id)"
+            }
+        ]
+    },
+    "Index idx_district_dwid on district(d_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_district_dwid on district(d_w_id)"
+            }
+        ]
+    },
+    "Index idx_district_did on district(d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_district_did on district(d_id)"
+            }
+        ]
+    },
+    "Index idx_district_dwid_did on district(d_w_id,d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_district_dwid_did on district(d_w_id,d_id)"
+            }
+        ]
+    },
+    "Index idx_district_did_dwid on district(d_id,d_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_district_did_dwid on district(d_id,d_w_id)"
+            }
+        ]
+    },
+    "Index idx_warehouse_wid on warehouse(w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_warehouse_wid on warehouse(w_id)"
+            }
+        ]
+    },
+    "Index idx_stock_swid on stock(s_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_swid on stock(s_w_id)"
+            }
+        ]
+    },
+    "Index idx_stock_siid on stock(s_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_siid on stock(s_i_id)"
+            }
+        ]
+    },
+    "Index idx_stock_squantity on stock(s_quantity)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_squantity on stock(s_quantity)"
+            }
+        ]
+    },
+    "Index idx_stock_swid_siid on stock(s_w_id,s_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_swid_siid on stock(s_w_id,s_i_id)"
+            }
+        ]
+    },
+    "Index idx_stock_siid_swid on stock(s_i_id,s_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_siid_swid on stock(s_i_id,s_w_id)"
+            }
+        ]
+    },
+    "Index idx_stock_swid_squantity on stock(s_w_id,s_quantity)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_swid_squantity on stock(s_w_id,s_quantity)"
+            }
+        ]
+    },
+    "Index idx_stock_squantity_swid on stock(s_quantity,s_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_squantity_swid on stock(s_quantity,s_w_id)"
+            }
+        ]
+    },
+    "Index idx_stock_squantity_siid on stock(s_quantity,s_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_squantity_siid on stock(s_quantity,s_i_id)"
+            }
+        ]
+    },
+    "Index idx_stock_siid_squantity on stock(s_i_id,s_quantity)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_siid_squantity on stock(s_i_id,s_quantity)"
+            }
+        ]
+    },
+    "Knob(work_mem)": {
+        "actions": [
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 1024,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 2048,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 4096,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 8192,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 16384,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 32768,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 65536,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 131072,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 262144,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 524288,
+                "alter_system": false
+            },
+            {
+                "type": "KnobAction",
+                "target": "Knob(work_mem)",
+                "val": 1048576,
+                "alter_system": false
+            }
+        ]
+    }
+}

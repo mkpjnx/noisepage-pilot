@@ -1,0 +1,37 @@
+Connector:
+  dbname: "peijingx"
+  user: "peijingx"
+  password: "password"
+  host: "localhost"
+  port: 5434
+Workloads:
+  - name: tpcc_trace
+    csvlog: /home/peijingx/repos/noisepage-pilot/artifacts/action/tpcc_trace.csv
+    export:
+      sample_size: 500
+      output: sample.sql 
+Generators:
+  - generator: DropIndexGenerator
+    name: generator1
+    args:
+  # - generator: ExhaustiveIndexGenerator
+  #   name: generator2
+  #   args:
+  #     max_width: 2
+  - generator: WorkloadIndexGenerator
+    name: generator3
+    args:
+      workload: tpcc_trace
+      max_width: 1
+      clauses: 
+        - whereClause
+        - groupClause
+        - sortClause
+  # - generator: TypedIndexGenerator
+  #   name: generator4
+  #   args:
+  #     types:
+  #       - HASH
+  #       - BRIN
+  #       # - BTREE is not needed: currently we've collect actions from the upstream already
+  #     upstream: generator2

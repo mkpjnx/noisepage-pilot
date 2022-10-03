@@ -1,13 +1,15 @@
 Connector:
-  dbname: ""
-  user: ""
-  password: ""
-  host: ""
-Workload:
-  csvlog: artifacts/action/FILLMEIN.csv
+  dbname: "FILLMEIN"
+  user: "FILLMEIN"
+  password: "FILLMEIN"
+  host: "localhost"
+  port: 5434
+Workload: # Declare workloads here
+  name: tpch_trace
+  csvlog: /home/peijingx/repos/noisepage-pilot/artifacts/action/tpch_trace.csv
   export:
     sample_size: 500
-    output: artifacts/action/FILLMEIN.sql 
+    output: sample.sql 
 Generators:
   # - generator: DropIndexGenerator
   #   name: generator1
@@ -19,8 +21,12 @@ Generators:
   - generator: WorkloadIndexGenerator
     name: generator3
     args:
-      workload: artifacts/action/FILLMEIN.csv
-      max_width: 4
+      workload: tpch_trace
+      max_width: 1
+      clauses: 
+        - whereClause
+        - groupClause
+        - sortClause
   # - generator: TypedIndexGenerator
   #   name: generator4
   #   args:

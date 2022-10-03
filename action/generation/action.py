@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict
-
+import json
 
 class Configuration(ABC):
     @property
@@ -39,6 +39,10 @@ class Action(ABC):
     def __repr__(self):
         return self.to_sql()
 
+    def __eq__(self, other):
+        if not isinstance(other, Action):
+            return False
+        return self.__repr__() == other.__repr__()
 
 class ActionGenerator(ABC):
     def __init__(self):
@@ -58,3 +62,11 @@ class ActionGenerator(ABC):
             except StopIteration:
                 return actions
         return actions
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Action):
+            return obj.to_json()
+        if isinstance(obj, Configuration):
+            return repr(obj)
+        return json.JSONEncoder.default(self, obj)

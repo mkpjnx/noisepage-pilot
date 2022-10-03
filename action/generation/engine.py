@@ -7,8 +7,33 @@ from connector import Connector
 from plumbum import cli
 from workload.workload import Workload
 
-from action import Action
+import action
 
+
+class ActionCatalog:
+    def __init__(self):
+        self.map_ident_config = {}
+        self.action_map = {}
+    
+    def add_action(self, action: action.Action, gen_name):
+        # key = None
+
+        # Check if relevant target config exists
+        if action.target.identifier not in self.map_ident_config:
+            self.map_ident_config[action.target.identifier] = action.target
+            self.action_map[action.target.identifier] = {'actions':[]}
+
+        # Set the action's config to an existing one
+        config = self.map_ident_config[action.target.identifier]
+        action._target = config
+
+        # Add action to relevant data (avoid dupes)
+        if action not in self.action_map[config.identifier]['actions']:
+            self.action_map[config.identifier]['actions'].append(action)
+        return
+
+    def export(self):
+        return json.loads(action.JSONEncoder().encode(self.action_map))
 
 class RuleEngine:
     def __init__(self, config, conn: Connector, workload_map={}):
@@ -16,8 +41,7 @@ class RuleEngine:
         self._conn = conn
         self.workload_map = workload_map
 
-        self.config_map = {}
-        self.action_map = {}
+        self.action_catalogue = ActionCatalog()
 
         self.instantiate_generators()
 
@@ -25,32 +49,11 @@ class RuleEngine:
     def connector(self):
         return self._conn
 
-    def add_action(self, action: Action, gen_name):
-        # key = None
-
-        # Check if relevant target config exists
-        if action.target.identifier not in self.config_map:
-            self.config_map[action.target.identifier] = action.target
-            self.action_map[action.target] = []
-
-        # Set the action's config to an existing one
-        config = self.config_map[action.target.identifier]
-        action._target = config
-
-        # Add action to relevant data
-        # TODO: check for duplicates
-        self.action_map[config].append(action)
-        return
-
-    def export(self):
-        return {str(k): [a.to_json() for a in v] for k, v in self.action_map.items()}
-
     def instantiate_generators(self):
         # To deduplicate exact same generators_map with same attrs, can use set()
         self.generators_map = {}  # generator name - generator
 
         for generator in self.config["Generators"]:
-            print(generator)
 
             gen_type = generator["generator"]
             gen_name = generator["name"]
@@ -86,34 +89,51 @@ class RuleEngine:
         for gen_name, gen in self.generators_map.items():
             ts = time.time()
             for action in gen.get_action():
-                self.add_action(action, gen_name)
-            print(f"{gen_name} ({time.time() - ts}s)")
-
+                self.action_catalogue.add_action(action, gen_name)
+            print(f"\t{gen_name}\t{time.time() - ts}")
+            
+        ts = time.time()
         with open(output_path, "w") as f:
-            converted = self.export()
+            converted = self.action_catalogue.export()
             json.dump(converted, fp=f, indent=4)
+        print(f"\twrite_actions\t{time.time() - ts}")
 
 
 class GenerateActions(cli.Application):
-    output_sql = cli.SwitchAttr("--output-sql", str, mandatory=True)
-    config_file = cli.SwitchAttr("--config-file", str, mandatory=True)
+    output_name = cli.SwitchAttr(['-o','--output-name'], str, mandatory=True)
+    config_file = cli.SwitchAttr(['-c','--config-file'], str, mandatory=True)
 
     def main(self):
+        start_ts = time.time()
+        ts = time.time()
         with open(self.config_file) as f:
             config = yaml.safe_load(f)
-        print(config["Connector"])
+        print(f"load_config \t{time.time() - ts}")
+        ts = time.time()
+
         conn = Connector(**config["Connector"])
+        print(f"connected\t{time.time() - ts}")
+        ts = time.time()
 
         workload_map = {}
-        if "Workload" in config:
-            w = Workload(config["Workload"]["csvlog"], conn)
-            w.export_sample(**config["Workload"]["export"])
 
-            workload_map[config["Workload"]["csvlog"]] = w
+        if "Workloads" in config:
+            for wkload in config['Workloads']:
+                print(f"{wkload['name']}: parsing csvlog {wkload['csvlog']}")
+                w = Workload(wkload["csvlog"], conn)
+                if 'export' in wkload:
+                    w.export_sample(**wkload["export"])
+                workload_map[wkload['name']] = w
+
+        print(f"workload_process \t{time.time() - ts}")
+        ts = time.time()
 
         engine = RuleEngine(config, conn, workload_map)
-        engine.run_generator(self.output_sql)
 
+        ts = time.time()
+        engine.run_generator(self.output_name)
+        print(f"run_engine \t{time.time() - ts}")
+        print(f"TOTAL\t{time.time() - start_ts}")
 
 if __name__ == "__main__":
     GenerateActions.run()

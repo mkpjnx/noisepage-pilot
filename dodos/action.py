@@ -40,11 +40,10 @@ def task_action_generation():
     #   - Write to system table (v1)
     # - Workload (from where?)
 
-    def generate_actions(configfile):
+    def generate_actions(output_file, config_file):
         cmd = (
-            f"python3 ./action/generation/engine.py " f"--output-sql {ARTIFACT_ACTIONS} " f"--config-file {configfile} "
+            f"python3 ./action/generation/engine.py " f"--output-name {ARTIFACTS_PATH / output_file} " f"--config-file {config_file} "
         )
-        print(cmd)
         return cmd
 
     return {
@@ -59,9 +58,16 @@ def task_action_generation():
         "verbosity": VERBOSITY_DEFAULT,
         "params": [
             {
-                "name": "configfile",
-                "long": "configfile",
+                "name": "config_file",
+                "long": "config-file",
+                "short": "c",
                 "default": "action/generation/temp.yaml",
+            },
+            {
+                "name": "output_file",
+                "long": "output-file",
+                "short": "o",
+                "default": "actions.json",
             },
         ],
     }

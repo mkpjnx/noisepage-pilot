@@ -5,8 +5,9 @@ from action import Action, Configuration
 
 
 class Knob(Configuration):
-    def __init__(self, name):
+    def __init__(self, name, precision = 4):
         self._name = name
+        self._precision = precision
 
     @property
     def identifier(self):
@@ -15,13 +16,20 @@ class Knob(Configuration):
     @property
     def name(self):
         return self._name
+    
+    @property
+    def precision(self):
+        return self._precision
 
 
 class KnobAction(Action):
     def __init__(self, target: Knob, setting=None, alterSystem=False):
         Action.__init__(self, target)
-        self.setting = setting
         self.alterSystem = alterSystem
+        if self.target.precision is not None and type(setting) == float:
+            self.setting = round(setting, self.target.precision)
+        else:
+            self.setting = setting
 
     def to_json(self):
         return {

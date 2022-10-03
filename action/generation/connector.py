@@ -1,38 +1,48 @@
 # noqa: E501 inspired by https://github.com/hyrise/index_selection_evaluation/blob/ca1dc87e20fe64f0ef962492597b77cd1916b828/selection/dbms/postgres_dbms.py
 import logging
+import time
 from typing import Dict, List, Tuple
 
 import sqlalchemy as sa
 
 
 class Connector:
-    def __init__(self, dbname=None, user=None, password=None, host=None):
+    def __init__(self, dbname=None, user=None, password=None, host=None, port = None):
 
-        cargs = {"dbname": dbname, "user": user, "password": password, "host": host}
+        cargs = {"dbname": dbname, "user": user, "password": password, "host": host, "port": port}
 
         self.dbname = dbname
         self.user = user
 
+        ts = time.time()
         self._engine = sa.create_engine("postgresql+psycopg2://", connect_args=cargs)
+        print(f"\tcreate_engine\t{time.time() - ts}")
+
+        ts = time.time()
         self._connection = self._engine.connect()
         self._connection.execution_options(isolation_level="AUTOCOMMIT")
-
         logging.debug(f"Connected to {self.dbname} as {self.user}")
+        print(f"\tconnect\t{time.time() - ts}")
 
+        ts = time.time()
         self.refresh_stats()
+        print(f"\trefresh_stats\t{time.time() - ts}")
 
+        ts = time.time()
         # reflect pg_settings for knob table schema
         self._catalog_meta = sa.MetaData()
         self._catalog_meta.reflect(self._connection, schema="pg_catalog", views=True, only=["pg_settings"])
+        print(f"\treflect\t{time.time() - ts}")
 
     def close(self):
         self._connection.close()
         logging.debug(f"Disconnected from {self.dbname} as {self.user}")
 
     def refresh_stats(self):
-        self._connection.execute("ANALYZE;")
+        # self._connection.execute("ANALYZE;")
         self._metadata = sa.MetaData()
         self._metadata.reflect(self._connection)
+        
 
     def get_table_info(self, refresh=False) -> Dict[str, List[str]]:
         if refresh:

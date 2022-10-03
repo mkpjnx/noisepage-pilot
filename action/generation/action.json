@@ -1,0 +1,195 @@
+{
+    "Index oorder_o_id_idx on oorder(o_id)": {
+        "actions": [
+            {
+                "type": "DropIndex",
+                "target": "Index oorder_o_id_idx on oorder(o_id)",
+                "cascade": false
+            }
+        ]
+    },
+    "Index idx_customer_cid on customer(c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cid on customer(c_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cwid on customer(c_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cwid on customer(c_w_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cdid on customer(c_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cdid on customer(c_d_id)"
+            }
+        ]
+    },
+    "Index idx_customer_cfirst on customer(c_first)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_cfirst on customer(c_first)"
+            }
+        ]
+    },
+    "Index idx_customer_clast on customer(c_last)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_customer_clast on customer(c_last)"
+            }
+        ]
+    },
+    "Index idx_oorder_owid on oorder(o_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_owid on oorder(o_w_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_oid on oorder(o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_oid on oorder(o_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_odid on oorder(o_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_odid on oorder(o_d_id)"
+            }
+        ]
+    },
+    "Index idx_oorder_ocid on oorder(o_c_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_oorder_ocid on oorder(o_c_id)"
+            }
+        ]
+    },
+    "Index idx_district_did on district(d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_district_did on district(d_id)"
+            }
+        ]
+    },
+    "Index idx_district_dwid on district(d_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_district_dwid on district(d_w_id)"
+            }
+        ]
+    },
+    "Index idx_stock_swid on stock(s_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_swid on stock(s_w_id)"
+            }
+        ]
+    },
+    "Index idx_stock_siid on stock(s_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_siid on stock(s_i_id)"
+            }
+        ]
+    },
+    "Index idx_stock_squantity on stock(s_quantity)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_stock_squantity on stock(s_quantity)"
+            }
+        ]
+    },
+    "Index idx_order_line_oloid on order_line(ol_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oloid on order_line(ol_o_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_olwid on order_line(ol_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_olwid on order_line(ol_w_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oldid on order_line(ol_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oldid on order_line(ol_d_id)"
+            }
+        ]
+    },
+    "Index idx_order_line_oliid on order_line(ol_i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_order_line_oliid on order_line(ol_i_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nowid on new_order(no_w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nowid on new_order(no_w_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nodid on new_order(no_d_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nodid on new_order(no_d_id)"
+            }
+        ]
+    },
+    "Index idx_new_order_nooid on new_order(no_o_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_new_order_nooid on new_order(no_o_id)"
+            }
+        ]
+    },
+    "Index idx_item_iid on item(i_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_item_iid on item(i_id)"
+            }
+        ]
+    },
+    "Index idx_warehouse_wid on warehouse(w_id)": {
+        "actions": [
+            {
+                "type": "CreateIndex",
+                "target": "Index idx_warehouse_wid on warehouse(w_id)"
+            }
+        ]
+    }
+}

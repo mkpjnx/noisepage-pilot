@@ -9,6 +9,8 @@ import pglast
 import pglast.visitors
 from connector import Connector
 
+PGLAST_CLAUSES = ["whereClause", "groupClause","sortClause"]
+
 _PG_LOG_COLUMNS: List[str] = [
     "log_time",
     "user_name",
@@ -118,18 +120,16 @@ def _get_all_colrefs(sql, table_cols):
     tree = pglast.parse_sql(sql)
 
     aliases = {}
-    where_colrefs = []
-    group_by_colrefs = []
+    clause_refs = {clause:[] for clause in PGLAST_CLAUSES}
     referenced_tables = pglast.visitors.referenced_relations(tree)
 
     # mine the AST for aliases and colrefs
     for node in pglast.node.Node(tree).traverse():
         if type(node) is pglast.node.Scalar:
             continue
-        if "whereClause" in node.attribute_names:
-            where_colrefs += _find_colrefs(node.whereClause)
-        if "groupClause" in node.attribute_names:
-            group_by_colrefs += _find_colrefs(node.groupClause)
+        for clause in PGLAST_CLAUSES:
+            if clause in node.attribute_names:
+                clause_refs[clause]  += _find_colrefs(node[clause])
         if "alias" in node.attribute_names and "relname" in node.attribute_names:
             if node.alias is pglast.Missing or node.relname is pglast.Missing:
                 continue
@@ -137,9 +137,11 @@ def _get_all_colrefs(sql, table_cols):
                 print("UH OH, double alias")
             aliases[node.alias.aliasname.value] = node.relname.value
     # resolve aliases and figure out actual table col refs
-    where_potentials = _resolve_colref_aliases(where_colrefs, aliases, referenced_tables, table_cols)
-    group_by_potentials = _resolve_colref_aliases(group_by_colrefs, aliases, referenced_tables, table_cols)
-    return where_potentials, group_by_potentials
+    # print(sql, clause_refs)
+    for clause, refs in clause_refs.items():
+        clause_refs[clause] = _resolve_colref_aliases(refs, aliases, referenced_tables, table_cols)
+
+    return clause_refs
 
 
 # parse_colref_aliases returns set of colrefs with resolved table names
@@ -170,13 +172,12 @@ def _resolve_colref_aliases(raw_colrefs, aliases, referenced_tables, table_cols)
     return set(potential_colrefs)
 
 
-def _aggregate_templates(df, conn, percent_threshold=1):
+def _aggregate_templates(df, table_cols, percent_threshold=1):
     """
     Aggregate queries into templates based on pglast
     Only retain most common queries up to {percent_threshold} of the workload
     """
 
-    table_cols = conn.get_table_info()
     df["fingerprint"] = df["queries"].apply(pglast.parser.fingerprint)
     aggregated = (
         df[["queries", "fingerprint"]]
@@ -189,28 +190,30 @@ def _aggregate_templates(df, conn, percent_threshold=1):
     filtered = pd.DataFrame(aggregated[aggregated["cumsum"] <= percent_threshold])
 
     # get column refs
-    filtered["where_colrefs"], filtered["group_by_colrefs"] = zip(
-        *filtered["sample"].apply(_get_all_colrefs, args=(table_cols,))
-    )
+    filtered["clause_refs"] = filtered["sample"].apply(
+        _get_all_colrefs,
+        args=(table_cols,))
 
-    return filtered[["sample", "count", "cumsum", "where_colrefs", "group_by_colrefs"]]
+    return filtered[["sample", "count", "cumsum", "clause_refs"]]
 
 
-def _get_workload_colrefs(filtered):
-    # TODO: all colref_types extraction are hard coded
-    colref_types = ["where_colrefs", "group_by_colrefs"]
-    table_colrefs_joint_counts = {k: defaultdict(lambda: defaultdict(np.uint64)) for k in colref_types}
+def get_workload_colrefs(filtered, table_cols, clauses):
+    # TODO: when to filter by clause?
+    # TODO: is 
+    tables = set(table_cols.keys())
+    table_colrefs_joint_counts = {k: defaultdict(np.uint64) for k in tables}
 
-    for colref_type_str in colref_types:
-        for _, row in filtered.iterrows():
-            refs = row[colref_type_str]
-            tables = set([tab for (tab, _) in refs])
-            for table in tables:
-                cols_for_tabs = [col for (tab, col) in refs if tab == table]
-                if len(cols_for_tabs) == 0:
-                    continue
-                joint_ref = tuple(dict.fromkeys(cols_for_tabs))
-                table_colrefs_joint_counts[colref_type_str][table][joint_ref] += row["count"]
+
+    for _, row in filtered.iterrows():
+        for table in tables:
+            cols_for_table = []
+            for clause in clauses:
+                refs = row["clause_refs"][clause]
+                cols_for_table += [col for (tab, col) in refs if tab == table]
+            if len(cols_for_table) == 0:
+                continue
+            joint_ref = tuple(set(cols_for_table))
+            table_colrefs_joint_counts[table][joint_ref] += row["count"]
 
     return table_colrefs_joint_counts
 
@@ -226,24 +229,21 @@ class Workload:
     def _parse(self):
         # execute log parsing for workload, store each type of col_refs in a per-table basis
         ts = time.time()
+        self.table_cols = self.conn.get_table_info()
         self.parsed = _parse_csv_log(self.file_name)
-        print(f"parsed ({time.time() - ts}s)")
+        print(f"\tparsed\t{time.time() - ts}")
 
         ts = time.time()
-        self.filtered = _aggregate_templates(self.parsed, self.conn)
-        print(f"aggregated ({time.time() - ts}s)")
-
-        ts = time.time()
-        self.colrefs = _get_workload_colrefs(self.filtered)
-        print(f"extracted colrefs ({time.time() - ts}s)")
+        self.filtered = _aggregate_templates(self.parsed, self.table_cols)
+        print(f"\ttemplatize\t{time.time() - ts}")
+        self.filtered.to_csv("test.csv")
 
     def export_sample(self, sample_size=500, output=None):
+        sample_size = min(sample_size, len(self.parsed["queries"]))
         with open(output, "w") as file:
             queries = self.parsed["queries"].sample(sample_size).values
             print(";\n".join(queries), file=file)
 
-    def get_where_colrefs(self):
-        return self.colrefs["where_colrefs"]
-
-    def get_group_by_colrefs(self):
-        return self.colrefs["group_by_colrefs"]
+    def get_colrefs(self, clauses = PGLAST_CLAUSES):
+        clauses = clauses if clauses is not None else PGLAST_CLAUSES
+        return get_workload_colrefs(self.filtered, self.table_cols, clauses)

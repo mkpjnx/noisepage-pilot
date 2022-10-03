@@ -68,19 +68,20 @@ class WorkloadIndexGenerator(ActionGenerator):
     for each table's columns which appears together.
     """
 
-    # TODO: change this to take workload object instead of joint_refs
-    def __init__(self, workload: Workload, max_width=1, **kwargs) -> None:
+    def __init__(self, workload: Workload, max_width=1, clauses=None, **kwargs) -> None:
         ActionGenerator.__init__(self)
-        joint_refs = workload.get_where_colrefs()
-        self.tables = list(joint_refs.keys())
-        self.joint_refs = joint_refs
-        self.actions_per_table = [len(joint_refs[t]) for t in self.tables]
+
+        self.refs = workload.get_colrefs(clauses)
+        self.tables = set(self.refs.keys())
         # Prefix sum of actions per table
         self.max_width = max_width
 
     def _iter_table_widths(self, table, width):
         col_perms = set()
-        for cols in self.joint_refs[table]:
+
+        #TODO: per query template aggregate? per clause aggregate? per table aggregate?
+        # all_refs = set().union(*all_refs)
+        for cols in self.refs[table]:
             for perm in itertools.permutations(cols, width):
                 if perm in col_perms:
                     continue
@@ -89,13 +90,7 @@ class WorkloadIndexGenerator(ActionGenerator):
                 yield CreateIndexAction(target)
 
     def get_action(self):
-        for table in self.tables:
-            for width in range(1, self.max_width + 1):
-                for action in self._iter_table_widths(table, width):
-                    yield action
-
-    def items(self):
-        for table in self.tables:
+        for table in self.refs:
             for width in range(1, self.max_width + 1):
                 for action in self._iter_table_widths(table, width):
                     yield action
